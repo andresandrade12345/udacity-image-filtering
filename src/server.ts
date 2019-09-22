@@ -49,7 +49,7 @@ import {deleteLocalFiles, filterImageFromURL} from "./util/util";
 
             res.status(200).sendFile(filterImagePath);
         } catch (e) {
-            return res.status(500).send(`Cannot filter image: ${e}`);
+            return res.status(422).send(`Cannot process image: ${e}`);
         }
     });
     /**************************************************************************** */
