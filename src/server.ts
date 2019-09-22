@@ -1,8 +1,15 @@
+if (process.env.NODE_ENV && process.env.NODE_ENV === "development") {
+    // tslint:disable-next-line:no-var-requires
+    const dotenv = require("dotenv");
+    dotenv.config();
+}
+
 import bodyParser from "body-parser";
 import { Request, Response } from "express";
 import express from "express";
 import validUrl from "valid-url";
 
+import {requireAuth} from "./auth/auth";
 import {deleteLocalFiles, filterImageFromURL} from "./util/util";
 
 (async () => {
@@ -27,31 +34,34 @@ import {deleteLocalFiles, filterImageFromURL} from "./util/util";
     //    image_url: URL of a publicly accessible image
     // RETURNS
     //   the filtered image file [!!TIP res.sendFile(filteredpath); might be useful]
-    app.get("/filteredimage", async (req: Request, res: Response) => {
-        const { image_url } = req.query;
+    app.get("/filteredimage",
+        requireAuth,
+        async (req: Request, res: Response) => {
+            const { image_url } = req.query;
 
-        if (!image_url || !validUrl.isUri(image_url)) {
-            return res.status(400).send("image_url is missing or URL is invalid");
-        }
+            if (!image_url || !validUrl.isUri(image_url)) {
+                return res.status(400).send("image_url is missing or URL is invalid");
+            }
 
-        let filterImagePath: string;
+            let filterImagePath: string;
 
-        try {
-            filterImagePath = await filterImageFromURL(image_url);
+            try {
+                filterImagePath = await filterImageFromURL(image_url);
 
-            res.on("finish", async () => {
-                try {
-                    await deleteLocalFiles([filterImagePath]);
-                } catch (e) {
-                    console.log("Cannot delete image");
-                }
-            });
+                res.on("finish", async () => {
+                    try {
+                        await deleteLocalFiles([filterImagePath]);
+                    } catch (e) {
+                        console.log("Cannot delete image");
+                    }
+                });
 
-            res.status(200).sendFile(filterImagePath);
-        } catch (e) {
-            return res.status(422).send(`Cannot process image: ${e}`);
-        }
-    });
+                res.status(200).sendFile(filterImagePath);
+            } catch (e) {
+                return res.status(422).send(`Cannot process image: ${e}`);
+            }
+        },
+    );
     /**************************************************************************** */
     // ! END @TODO1
 

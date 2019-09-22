@@ -24,13 +24,17 @@
     "@types/express": "^4.17.0",
     "@types/node": "^11.13.17",
     "@types/valid-url": "1.0.2",
+    "dotenv": "8.1.0",
     "ts-node-dev": "^1.0.0-pre.32",
     "tslint": "^5.14.0",
     "typescript": "^3.3.4000"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "8.3.4",
+    "connect": "3.7.0",
     "express": "^4.17.1",
     "jimp": "^0.6.4",
+    "jsonwebtoken": "8.5.1",
     "valid-url": "1.0.9"
   }
 }
